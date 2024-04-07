@@ -6,10 +6,7 @@ exports.createPlayer = async(req,res) =>{
         const { team_id } = req.params;
         const { name, role } = req.body;
     
-        // Validate request body
-        if (!name || !role) {
-          return res.status(400).json({ error: "Name and role are required" });
-        }
+        
     
         const newPlayer = await playerModel.create({
           name,

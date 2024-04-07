@@ -13,9 +13,9 @@ const { playerStats } = require("../controllers/getPlayerStats");
 router.post("/admin/signup",signup);
 router.post("/admin/login",login);
 router.post("/matches",createMatch);
-router.get("/matches",verifyToken,getAllMAtches)
+router.get("/matches",getAllMAtches)
 router.get("/matches/:match_id",getMatchDetails)
-router.post("/teams/:team_id/squad",createPlayer)
+router.post("/teams/:team_id/squad",verifyToken,createPlayer)
 router.get("/players/:player_id/stats",playerStats)
 
 module.exports = router;

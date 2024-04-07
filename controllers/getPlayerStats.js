@@ -15,7 +15,7 @@ exports.playerStats = async (req, res) => {
     // console.log(player_id);
     res.status(200).json(playerDetails);
   } catch (error) {
-    console.error("Database error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    // console.error("Database error:", error);
+    return res.status(500).json({ error: "Error in giving player stat" });
   }
 };

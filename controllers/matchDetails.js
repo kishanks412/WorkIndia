@@ -5,22 +5,40 @@ const playerModel = require("../model/model").playerModel;
 const matchModel = require("../model/model").matchModel;
 
 const team_id = {
-  "United States": 1,
-  China: 2,
-  India: 5,
-  Brazil: 4,
-  Pakistan: 3,
-  Nigeria: 6,
-  Bangladesh: 7,
-  Australia: 8,
-  Mexico: 9,
-  Japan: 10,
+  "India": 1,
+  "Australia": 2,
+  "South Africa": 5,
+  "New Zealand": 4,
+  "West Indies": 3,
+  "Bangladesh": 6,
+  "Pakistan": 7,
+  "Afghanistan": 8,
+  "Zimbabwe": 9,
+  "Sri Lanka": 10,
+  "EngLand": 11,
+  "Netherland": 12,
+  "Scotland": 13,
 };
 
+function checkMatchStatus(matchDateStr) {
+    const matchDate = new Date(matchDateStr);
+    const currentDate = new Date();
+  
+    if (matchDate < currentDate) {
+      return "Completed";
+    } else if (matchDate.getDate() === currentDate.getDate()) {
+      return "Ongoing";
+    } else {
+      return "Upcoming";
+    }
+  }
+
 exports.getMatchDetails = async (req, res) => {
+
   const { match_id } = req.params;
 
   try {
+    // fetched match details from the match table
     const matchData = await matchModel.findOne({
       where: { match_id },
       attributes: ["match_id", "team1", "team2", "date", "venue"],
@@ -30,9 +48,11 @@ exports.getMatchDetails = async (req, res) => {
       return res.status(401).json({ error: "Match Details not found" });
     }
 
+    // finding team code for both teams throgh team name
     const team1Code = team_id[matchData.team1];
     const team2Code = team_id[matchData.team2];
-
+    
+    // fetched squad for both the teams
     const squad1 = await playerModel.findAll({
       where: { team_id: team1Code },
       attributes: ["player_id", "name"],
@@ -45,24 +65,15 @@ exports.getMatchDetails = async (req, res) => {
       raw: true,
     });
 
-    const matchDate = new Date(matchData.date);
-
-    const currentDate = new Date();
-
-    if (matchDate < currentDate) {
-      matchStatus = "Completed";
-    } else if (matchDate.getDate() === currentDate.getDate()) {
-      matchStatus = "Ongoing";
-    } else {
-      matchStatus = "Upcoming";
-    }
+    // checking match status whether it is completed, ongoing, upcoming by the current date
+    const matchStatus = checkMatchStatus(matchData.date)
 
     const squads = {
       team_1: squad1,
       team_2: squad2,
     };
 
-    // Combine all information into final output format
+    // Combining all information into final output format
     const matchDetails = {
       match_id: matchData.match_id,
       team_1: matchData.team1,

@@ -21,7 +21,7 @@ exports.signup = async (req, res) => {
     // Return success response
     return res
       .status(200)
-      .json({ message: "User signed up successfully", data: newUser });
+      .json({ status: "Admin Account successfully created", user_id: newUser.user_id });
   } catch (error) {
     console.error("Error signing up:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -50,24 +50,23 @@ exports.login = async (req, res) => {
     });
 
     user.token = token;
-    
     user.password = undefined;
 
     const options = {
-      expires: new Date(Date.now() +  60 * 60 * 1000),
-      httpOnly: true, // by this we cnat accessit on client side
-    };
-    // we have to pass three param in cookie: name of cookie, data of cookie, options
-    res.cookie("token", token, options).status(200).json({
-      success: true,
+      expires: new Date( Date.now() + 60*60*1000),
+      httpOnly:true,
+    }
+  
+
+    res.setHeader("Authorization", "Bearer " + token);
+    return res.cookie("token", token, options).status(200).json({
+      status: "Login successful",
+      user_id: user.user_id,
       token,
-      user,
-      message: "User Logged in successfully",
     });
 
-    // Return token in response
   } catch (error) {
-    console.error("Database error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    // console.error("Database error:", error);
+    return res.status(401).json({ status: "Incorrect username/password provided. Please retry" });
   }
 };

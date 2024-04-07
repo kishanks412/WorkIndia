@@ -30,13 +30,26 @@ Assumptions:
                 "Scotland": 13,
             };
 
-        and every player belongs one of this {team: team_id}
+        and every player belongs to one of this {team: team_id}
+
+        when your adding team member to a squad then take {team_id} from above reference
 
 
 Router Functionality:
 
     All routers are functional and provide the correct output as expected.
 
+Match Status Calculation
+
+    The match status is calculated dynamically based on the match date and the current date. This functionality is implemented to provide users with real-time information about matches.
+
+    Implementation
+    
+        The match status is determined using the following logic:
+
+        Completed: If the match date is before the current date.
+        Ongoing: If the match date is the same as the current date.
+        Upcoming: If the match date is after the current date.
 
 Important Note:
 

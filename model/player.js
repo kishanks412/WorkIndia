@@ -39,9 +39,6 @@ module.exports = (db_config) => {
       allowNull: false,
     },
   });
-
-  // Define associations
-  // Player.belongsTo(teamModel, { foreignKey: 'team_id' });
-
+  
   return Player;
 };

@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find user by email
+    // Finding user by email
     const user = await userModel.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: "User not found" });

@@ -33,10 +33,11 @@ Assumptions:
         and every player belongs one of this {team: team_id}
 
 
-Important Note:
-
-    While running the code, if any error regarding token validity occurs, ensure to check all routers without middleware to rectify the issue.
-
 Router Functionality:
 
     All routers are functional and provide the correct output as expected.
+
+
+Important Note:
+
+    While running the code, if any error regarding token validity occurs, ensure to check all routers without middleware to rectify the issue.

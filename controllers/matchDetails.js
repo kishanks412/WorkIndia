@@ -1,7 +1,5 @@
-const match = require("../model/match");
-
+const match = require("../model/match").match;
 const playerModel = require("../model/model").playerModel;
-
 const matchModel = require("../model/model").matchModel;
 
 const team_id = {
@@ -37,6 +35,11 @@ exports.getMatchDetails = async (req, res) => {
 
   const { match_id } = req.params;
 
+  // Validating match_id to ensure it's a positive integer
+  if (!match_id || isNaN(parseInt(match_id)) || parseInt(match_id) <= 0) {
+    return res.status(400).json({ error: "Invalid match ID" });
+  }
+
   try {
     // fetched match details from the match table
     const matchData = await matchModel.findOne({
@@ -44,6 +47,8 @@ exports.getMatchDetails = async (req, res) => {
       attributes: ["match_id", "team1", "team2", "date", "venue"],
       raw: true,
     });
+
+    // checking match details
     if (!matchData) {
       return res.status(401).json({ error: "Match Details not found" });
     }
@@ -52,7 +57,7 @@ exports.getMatchDetails = async (req, res) => {
     const team1Code = team_id[matchData.team1];
     const team2Code = team_id[matchData.team2];
     
-    // fetched squad for both the teams
+    // fetching squad for both the teams
     const squad1 = await playerModel.findAll({
       where: { team_id: team1Code },
       attributes: ["player_id", "name"],

@@ -1,11 +1,23 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userModel = require("../model/model").userModel;
+const validator = require('validator');
+
 
 exports.signup = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+
+    // Validating email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Validating password length
+    if (password.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters long" });
+    }
     // Check if the email already exists
     const existingUser = await userModel.findOne({ where: { email } });
     if (existingUser) {
@@ -18,10 +30,18 @@ exports.signup = async (req, res) => {
     // Create a new user
     const newUser = await userModel.create({ email, password: hashedPassword });
 
+    // Generate JWT token
+    const token = jwt.sign({ id: newUser.user_id,email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    newUser.token = token;
+    newUser.password = undefined;
+
     // Return success response
     return res
       .status(200)
-      .json({ status: "Admin Account successfully created", user_id: newUser.user_id });
+      .json({ status: "Admin Account successfully created", user_id: newUser.user_id,token });
   } catch (error) {
     console.error("Error signing up:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -32,6 +52,15 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Validating email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Checking if password is provided
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
+    }
     // Finding user by email
     const user = await userModel.findOne({ where: { email } });
     if (!user) {
@@ -45,7 +74,7 @@ exports.login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.user_id, email }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
@@ -63,6 +92,7 @@ exports.login = async (req, res) => {
       status: "Login successful",
       user_id: user.user_id,
       token,
+      user
     });
 
   } catch (error) {

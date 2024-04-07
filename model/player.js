@@ -29,16 +29,18 @@ module.exports = (db_config) => {
     strike_rate: {
       type: DataTypes.FLOAT,
       allowNull: true,
+      defaultValue: 0,
     },
     average: {
       type: DataTypes.FLOAT,
       allowNull: true,
+      defaultValue: 0,
     },
     team_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
   });
-  
+
   return Player;
 };

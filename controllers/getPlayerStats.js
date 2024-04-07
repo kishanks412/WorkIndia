@@ -2,10 +2,17 @@ const playerModel = require("../model/model").playerModel;
 
 exports.playerStats = async (req, res) => {
   const { player_id } = req.params;
+
+  // Validating player_id to ensure it's a positive integer
+  if (!player_id || isNaN(parseInt(player_id)) || parseInt(player_id) <= 0) {
+    return res.status(400).json({ error: "Invalid player ID" });
+  }
+
   try {
     // console.log(player_id);
     const playerDetails = await playerModel.findOne({
       where: { player_id },
+      attributes:["player_id","name", "matches_played","runs","average","strike_rate"],
       raw: true,
     });
     if (!playerDetails) {
